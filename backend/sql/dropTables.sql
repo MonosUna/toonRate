@@ -1,0 +1,8 @@
+DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS ratings;
+DROP TABLE IF EXISTS collectionsProductions;
+DROP TABLE IF EXISTS collections;
+DROP TABLE IF EXISTS discussions;
+DROP TABLE IF EXISTS reviews;
+DROP TABLE IF EXISTS productions;
+DROP TABLE IF EXISTS users;

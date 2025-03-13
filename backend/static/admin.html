@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление всем</title>
+    <style>
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h2>Управление данными</h2>
+
+    <nav>
+        <button class="nav-btn" data-target="productionsSection">Произведения</button>
+        <button class="nav-btn" data-target="usersSection">Пользователи</button>
+        <button class="nav-btn" data-target="collectionsSection">Подборки</button>
+        <button class="nav-btn" data-target="reviewsSection">Обзоры</button>
+        <button class="nav-btn" data-target="discussionsSection">Обсуждения</button>
+    </nav>
+
+    <div id="productionsSection" class="section">
+    
+        <h3>Управление произведениями</h3>
+        <button id="showAddFormBtn">Добавить произведение</button>
+    
+        <div id="addFormContainer" style="display:none;">
+            <h3>Добавить произведение</h3>
+            <form id="addProductionForm">
+                <label for="productionId">ID:</label>
+                <input type="number" id="productionAddId" name="id" required><br>
+    
+                <label for="productionTitle">Название:</label>
+                <input type="text" id="productionAddTitle" name="title" required><br>
+    
+                <label for="productionDescription">Описание:</label>
+                <textarea id="productionAddDescription" name="description" required></textarea><br>
+    
+                <label for="productionGenre">Жанр:</label>
+                <input type="text" id="productionAddGenre" name="genre" required><br>
+    
+                <label for="productionYear">Год:</label>
+                <input type="number" id="productionAddYear" name="year" required><br>
+    
+                <button type="submit">Добавить произведение</button>
+            </form>
+        </div>
+    
+        <div id="editFormContainer" style="display:none;">
+            <h3>Редактировать произведение</h3>
+            <form id="editProductionForm">
+                <label for="productionId">ID:</label>
+                <input type="number" id="productionEditId" name="id" disabled><br>
+    
+                <label for="productionTitle">Название:</label>
+                <input type="text" id="productionEditTitle" name="title" required><br>
+    
+                <label for="productionDescription">Описание:</label>
+                <textarea id="productionEditDescription" name="description" required></textarea><br>
+    
+                <label for="productionGenre">Жанр:</label>
+                <input type="text" id="productionEditGenre" name="genre" required><br>
+    
+                <label for="productionYear">Год:</label>
+                <input type="number" id="productionEditYear" name="year" required><br>
+    
+                <button type="submit">Обновить произведение</button>
+            </form>
+        </div>
+    
+        <h3>Список произведений:</h3>
+        <div id="productionsList"></div>
+    
+        <script>
+            document.querySelectorAll('.nav-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    document.querySelectorAll('.section').forEach(section => {
+                        section.classList.remove('active');
+                    });
+                    const targetSection = document.getElementById(button.dataset.target);
+                    targetSection.classList.add('active');
+                });
+            });
+    
+            document.getElementById("showAddFormBtn").addEventListener("click", function() {
+                const addFormContainer = document.getElementById("addFormContainer");
+                addFormContainer.style.display = addFormContainer.style.display === "none" ? "block" : "none";
+            });
+    
+            document.getElementById("addProductionForm").addEventListener("submit", function(event) {
+                event.preventDefault();
+    
+                const productionData = {
+                    id: parseInt(document.getElementById("productionAddId").value),
+                    title: document.getElementById("productionAddTitle").value,
+                    description: document.getElementById("productionAddDescription").value,
+                    genre: document.getElementById("productionAddGenre").value,
+                    year: parseInt(document.getElementById("productionAddYear").value)
+                };
+                fetch("http://127.0.0.1:5050/admin/add-production", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(productionData)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById("addProductionForm").reset();
+                        document.getElementById("addFormContainer").style.display = "none";
+                        loadProductions();
+                    }
+                })
+                .catch(error => {
+                    console.error("Ошибка:", error);
+                });
+            });
+    
+            function editProduction(id) {
+                fetch(`http://127.0.0.1:5050/admin/get-production/${id}`)
+                    .then(response => response.json())
+                    .then(production => {
+                        document.getElementById("productionEditId").value = production.id;
+                        document.getElementById("productionEditTitle").value = production.title;
+                        document.getElementById("productionEditDescription").value = production.description;
+                        document.getElementById("productionEditGenre").value = production.genre;
+                        document.getElementById("productionEditYear").value = production.year;
+    
+                        document.getElementById("editFormContainer").style.display = "block";
+                    });
+            }
+    
+            document.getElementById("editProductionForm").addEventListener("submit", function(event) {
+                event.preventDefault();
+    
+                const productionData = {
+                    id: parseInt(document.getElementById("productionEditId").value),
+                    title: document.getElementById("productionEditTitle").value,
+                    description: document.getElementById("productionEditDescription").value,
+                    genre: document.getElementById("productionEditGenre").value,
+                    year: parseInt(document.getElementById("productionEditYear").value)
+                };
+    
+                fetch("http://127.0.0.1:5050/admin/update-production", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(productionData)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById("editProductionForm").reset();
+                        document.getElementById("editFormContainer").style.display = "none";
+                        loadProductions();
+                    }
+                })
+                .catch(error => {
+                    console.error("Ошибка:", error);
+                });
+            });
+    
+            function loadProductions() {
+                fetch("http://127.0.0.1:5050/admin/get-productions")
+                    .then(response => response.json())
+                    .then(data => {
+                        const productionsList = document.getElementById("productionsList");
+                        productionsList.innerHTML = '';
+    
+                        if (data && data.productions) {
+                            data.productions.forEach(p => {
+                                const productionItem = document.createElement("div");
+                                productionItem.innerHTML = `
+                                    <h4>${p.title} (${p.year})</h4>
+                                    <p>${p.description}</p>
+                                    <p><strong>Жанр:</strong> ${p.genre}</p>
+                                    <button onclick="deleteProduction(${p.id})">Удалить</button>
+                                    <button onclick="editProduction(${p.id})">Изменить</button>
+                                    <hr>
+                                `;
+                                productionsList.appendChild(productionItem);
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Ошибка:", error);
+                    });
+            }
+    
+            function deleteProduction(id) {
+                fetch(`http://127.0.0.1:5050/admin/delete-production/${id}`, { method: "DELETE" })
+                    .then(response => {
+                        if (response.ok) {
+                            loadProductions();
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Ошибка:", error);
+                    });
+            }
+    
+            loadProductions();
+        </script>
+    </div>
+    
+
+    <div id="usersSection" class="section">
+        <h3>Управление пользователями</h3>
+        <button id="showUserAddFormBtn">Добавить пользователя</button>
+    
+        <div id="userAddFormContainer" style="display:none;">
+            <h3>Добавить пользователя</h3>
+            <form id="addUserForm">
+                <label for="userId">ID:</label>
+                <input type="number" id="userAddId" name="userAddId" required><br>
+    
+                <label for="username">Имя пользователя:</label>
+                <input type="text" id="userAddUsername" name="userAddUsername" required><br>
+
+                <label for="password">Пароль:</label>
+                <input type="text" id="userAddPassword" name="userAddPassword" required><br>
+    
+                <label for="email">Email:</label>
+                <input type="email" id="userAddEmail" name="userAddEmail" required><br>
+    
+                <label for="pfp">Ссылка на аватар:</label>
+                <input type="text" id="userAddPfp" name="userAddPfp" required><br>
+    
+                <label for="description">Описание:</label>
+                <textarea id="userAddDescription" name="userAddDescription" required></textarea><br>
+    
+                <button type="submit">Добавить пользователя</button>
+            </form>
+        </div>
+    
+        <div id="userEditFormContainer" style="display:none;">
+            <h3>Редактировать пользователя</h3>
+            <form id="editUserForm">
+                <label for="editUserId">ID:</label>
+                <input type="number" id="userEditId" name="userEditId" disabled><br>
+    
+                <label for="editUsername">Имя пользователя:</label>
+                <input type="text" id="userEditUsername" name="userEditUsername" required><br>
+
+                <label for="editPassword">Пароль:</label>
+                <input type="text" id="userEditPassword" name="userEditPassword" required><br>
+    
+                <label for="editEmail">Email:</label>
+                <input type="email" id="userEditEmail" name="userEditEmail" required><br>
+    
+                <label for="editPfp">Ссылка на аватар:</label>
+                <input type="text" id="userEditPfp" name="userEditPfp" required><br>
+    
+                <label for="editDescription">Описание:</label>
+                <textarea id="userEditDescription" name="userEditDescription" required></textarea><br>
+    
+                <button type="submit">Обновить пользователя</button>
+            </form>
+        </div>
+    
+        <h3>Список пользователей:</h3>
+        <div id="usersList"></div>
+    
+        <script>
+            document.getElementById("showUserAddFormBtn").addEventListener("click", function() {
+                const userAddFormContainer = document.getElementById("userAddFormContainer");
+                userAddFormContainer.style.display = userAddFormContainer.style.display === "none" ? "block" : "none";
+            });
+    
+            document.getElementById("addUserForm").addEventListener("submit", function(event) {
+                event.preventDefault();
+    
+                const userData = {
+                    id: parseInt(document.getElementById("userAddId").value),
+                    username: document.getElementById("userAddUsername").value,
+                    password: document.getElementById("userAddPassword").value,
+                    email: document.getElementById("userAddEmail").value,
+                    pfp: document.getElementById("userAddPfp").value,
+                    description: document.getElementById("userAddDescription").value
+                };
+    
+                fetch("http://127.0.0.1:5050/admin/add-user", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(userData)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById("addUserForm").reset();
+                        document.getElementById("userAddFormContainer").style.display = "none";
+                        loadUsers();
+                    }
+                })
+                .catch(error => {
+                    console.error("Ошибка:", error);
+                });
+            });
+    
+            function editUser(id) {
+                fetch(`http://127.0.0.1:5050/admin/get-user/${id}`)
+                    .then(response => response.json())
+                    .then(user => {
+                        document.getElementById("userEditId").value = user.id;
+                        document.getElementById("userEditUsername").value = user.username;
+                        document.getElementById("userEditPassword").value = user.password;
+                        document.getElementById("userEditEmail").value = user.email;
+                        document.getElementById("userEditPfp").value = user.pfp;
+                        document.getElementById("userEditDescription").value = user.description;
+    
+                        document.getElementById("userEditFormContainer").style.display = "block";
+                    });
+            }
+    
+            document.getElementById("editUserForm").addEventListener("submit", function(event) {
+                event.preventDefault();
+    
+                const userData = {
+                    id: parseInt(document.getElementById("userEditId").value),
+                    username: document.getElementById("userEditUsername").value,
+                    password: document.getElementById("userEditPassword").value,
+                    email: document.getElementById("userEditEmail").value,
+                    pfp: document.getElementById("userEditPfp").value,
+                    description: document.getElementById("userEditDescription").value
+                };
+    
+                fetch("http://127.0.0.1:5050/admin/update-user", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(userData)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById("editUserForm").reset();
+                        document.getElementById("userEditFormContainer").style.display = "none";
+                        loadUsers();
+                    }
+                })
+                .catch(error => {
+                    console.error("Ошибка:", error);
+                });
+            });
+    
+            function loadUsers() {
+                fetch("http://127.0.0.1:5050/admin/get-users")
+                    .then(response => response.json())
+                    .then(data => {
+                        const usersList = document.getElementById("usersList");
+                        usersList.innerHTML = '';
+    
+                        if (data && data.users) {
+                            data.users.forEach(user => {
+                                const userItem = document.createElement("div");
+                                userItem.innerHTML = `
+                                    <h4>${user.username} (${user.password}) (${user.email}) </h4>
+                                    <img src="${user.pfp}" alt="Аватар" style="width:50px;height:50px;">
+                                    <p>${user.description}</p>
+                                    <button onclick="deleteUser('${user.id}')">Удалить</button>
+                                    <button onclick="editUser('${user.id}')">Изменить</button>
+                                    <hr>
+                                `;
+                                usersList.appendChild(userItem);
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Ошибка:", error);
+                    });
+            }
+    
+            function deleteUser(id) {
+                fetch(`http://127.0.0.1:5050/admin/delete-user/${id}`, { method: "DELETE" })
+                    .then(response => {
+                        if (response.ok) {
+                            loadUsers();
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Ошибка:", error);
+                    });
+            }
+    
+            loadUsers();
+        </script>
+    </div>
+    
+
+    <div id="collectionsSection" class="section">
+
+        <h3>Управление подборками</h3>
+        <button id="showAddCollectionFormBtn">Добавить подборку</button>
+    
+        <div id="addCollectionFormContainer" style="display:none;">
+            <h3>Добавить подборку</h3>
+            <form id="addCollectionForm">
+                <label for="collectionId">ID:</label>
+                <input type="number" id="collectionAddId" name="collectionAddId" required><br>
+    
+                <label for="owner">Владелец:</label>
+                <input type="text" id="collectionAddOwner" name="collectionAddOwner" required><br>
+    
+                <label for="topic">Тема:</label>
+                <input type="text" id="collectionAddTopic" name="collectionAddTopic" required><br>
+    
+                <label for="message">Сообщение:</label>
+                <textarea id="collectionAddMessage" name="collectionAddMessage" required></textarea><br>
+    
+                <button type="submit">Добавить подборку</button>
+            </form>
+        </div>
+    
+        <div id="editCollectionFormContainer" style="display:none;">
+            <h3>Редактировать подборку</h3>
+            <form id="editCollectionForm">
+                <label for="collectionId">ID:</label>
+                <input type="number" id="collectionEditId" name="collectionEditId" disabled><br>
+    
+                <label for="owner">Владелец:</label>
+                <input type="text" id="collectionEditOwner" name="collectionEditOwner" required><br>
+    
+                <label for="topic">Тема:</label>
+                <input type="text" id="collectionEditTopic" name="collectionEditTopic" required><br>
+    
+                <label for="message">Сообщение:</label>
+                <textarea id="collectionEditMessage" name="collectionEditMessage" required></textarea><br>
+    
+                <button type="submit">Обновить подборку</button>
+            </form>
+        </div>
+    
+        <h3>Список подборок:</h3>
+        <div id="collectionsList"></div>
+    
+        <script>
+            document.getElementById("showAddCollectionFormBtn").addEventListener("click", function() {
+                const addCollectionFormContainer = document.getElementById("addCollectionFormContainer");
+                addCollectionFormContainer.style.display = addCollectionFormContainer.style.display === "none" ? "block" : "none";
+            });
+    
+            document.getElementById("addCollectionForm").addEventListener("submit", function(event) {
+                event.preventDefault();
+    
+                const collectionData = {
+                    id: parseInt(document.getElementById("collectionAddId").value),
+                    owner: document.getElementById("collectionAddOwner").value,
+                    topic: document.getElementById("collectionAddTopic").value,
+                    message: document.getElementById("collectionAddMessage").value
+                };
+    
+                fetch("http://127.0.0.1:5050/admin/add-collection", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(collectionData)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById("addCollectionForm").reset();
+                        document.getElementById("addCollectionFormContainer").style.display = "none";
+                        loadCollections();
+                    }
+                })
+                .catch(error => {
+                    console.error("Ошибка:", error);
+                });
+            });
+    
+            function editCollection(id) {
+                fetch(`http://127.0.0.1:5050/admin/get-collection/${id}`)
+                    .then(response => response.json())
+                    .then(collection => {
+                        document.getElementById("collectionEditId").value = collection.id;
+                        document.getElementById("collectionEditOwner").value = collection.owner;
+                        document.getElementById("collectionEditTopic").value = collection.topic;
+                        document.getElementById("collectionEditMessage").value = collection.message;
+    
+                        document.getElementById("editCollectionFormContainer").style.display = "block";
+                    });
+            }
+    
+            document.getElementById("editCollectionForm").addEventListener("submit", function(event) {
+                event.preventDefault();
+    
+                const collectionData = {
+                    id: parseInt(document.getElementById("collectionEditId").value),
+                    owner: document.getElementById("collectionEditOwner").value,
+                    topic: document.getElementById("collectionEditTopic").value,
+                    message: document.getElementById("collectionEditMessage").value
+                };
+    
+                fetch("http://127.0.0.1:5050/admin/update-collection", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(collectionData)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById("editCollectionForm").reset();
+                        document.getElementById("editCollectionFormContainer").style.display = "none";
+                        loadCollections();
+                    }
+                })
+                .catch(error => {
+                    console.error("Ошибка:", error);
+                });
+            });
+    
+            function loadCollections() {
+                fetch("http://127.0.0.1:5050/admin/get-collections")
+                    .then(response => response.json())
+                    .then(data => {
+                        const collectionsList = document.getElementById("collectionsList");
+                        collectionsList.innerHTML = '';
+    
+                        if (data && data.collections) {
+                            data.collections.forEach(c => {
+                                const collectionItem = document.createElement("div");
+                                collectionItem.innerHTML = `
+                                    <h4>${c.topic} (Владелец: ${c.owner})</h4>
+                                    <p>${c.message}</p>
+                                    <button onclick="deleteCollection('${c.id}')">Удалить</button>
+                                    <button onclick="editCollection('${c.id}')">Изменить</button>
+                                    <hr>
+                                `;
+                                collectionsList.appendChild(collectionItem);
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Ошибка:", error);
+                    });
+            }
+    
+            function deleteCollection(id) {
+                fetch(`http://127.0.0.1:5050/admin/delete-collection/${id}`, { method: "DELETE" })
+                    .then(response => {
+                        if (response.ok) {
+                            loadCollections();
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Ошибка:", error);
+                    });
+            }
+    
+            loadCollections();
+        </script>
+    </div>
+    
+    <div id="reviewsSection" class="section">
+
+        <h3>Управление обзорами</h3>
+        <button id="showAddReviewFormBtn">Добавить обзор</button>
+    
+        <div id="addReviewFormContainer" style="display:none;">
+            <h3>Добавить обзор</h3>
+            <form id="addReviewForm">
+                <label for="reviewId">ID:</label>
+                <input type="number" id="reviewAddId" name="reviewAddId" required><br>
+    
+                <label for="production">Произведение:</label>
+                <input type="number" id="reviewAddProduction" name="reviewAddProduction" required><br>
+    
+                <label for="owner">Владелец:</label>
+                <input type="text" id="reviewAddOwner" name="reviewAddOwner" required><br>
+    
+                <label for="topic">Тема:</label>
+                <input type="text" id="reviewAddTopic" name="reviewAddTopic" required><br>
+    
+                <label for="message">Сообщение:</label>
+                <textarea id="reviewAddMessage" name="reviewAddMessage" required></textarea><br>
+    
+                <button type="submit">Добавить обзор</button>
+            </form>
+        </div>
+    
+        <div id="editReviewFormContainer" style="display:none;">
+            <h3>Редактировать обзор</h3>
+            <form id="editReviewForm">
+                <label for="reviewId">ID:</label>
+                <input type="number" id="reviewEditId" name="reviewEditId" disabled><br>
+    
+                <label for="production">Произведение:</label>
+                <input type="number" id="reviewEditProduction" name="reviewEditProduction" required><br>
+    
+                <label for="owner">Владелец:</label>
+                <input type="text" id="reviewEditOwner" name="reviewEditOwner" required><br>
+    
+                <label for="topic">Тема:</label>
+                <input type="text" id="reviewEditTopic" name="reviewEditTopic" required><br>
+    
+                <label for="message">Сообщение:</label>
+                <textarea id="reviewEditMessage" name="reviewEditMessage" required></textarea><br>
+    
+                <button type="submit">Обновить обзор</button>
+            </form>
+        </div>
+    
+        <h3>Список обзоров:</h3>
+        <div id="reviewsList"></div>
+    
+        <script>
+            document.getElementById("showAddReviewFormBtn").addEventListener("click", function() {
+                const addReviewFormContainer = document.getElementById("addReviewFormContainer");
+                addReviewFormContainer.style.display = addReviewFormContainer.style.display === "none" ? "block" : "none";
+            });
+    
+            document.getElementById("addReviewForm").addEventListener("submit", function(event) {
+                event.preventDefault();
+    
+                const reviewData = {
+                    id: parseInt(document.getElementById("reviewAddId").value),
+                    production: parseInt(document.getElementById("reviewAddProduction").value),
+                    owner: document.getElementById("reviewAddOwner").value,
+                    topic: document.getElementById("reviewAddTopic").value,
+                    message: document.getElementById("reviewAddMessage").value
+                };
+    
+                fetch("http://127.0.0.1:5050/admin/add-review", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(reviewData)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById("addReviewForm").reset();
+                        document.getElementById("addReviewFormContainer").style.display = "none";
+                        loadReviews();
+                    }
+                })
+                .catch(error => {
+                    console.error("Ошибка:", error);
+                });
+            });
+    
+            function editReview(id) {
+                fetch(`http://127.0.0.1:5050/admin/get-review/${id}`)
+                    .then(response => response.json())
+                    .then(review => {
+                        document.getElementById("reviewEditId").value = review.ID;
+                        document.getElementById("reviewEditProduction").value = review.Production;
+                        document.getElementById("reviewEditOwner").value = review.Owner;
+                        document.getElementById("reviewEditTopic").value = review.Topic;
+                        document.getElementById("reviewEditMessage").value = review.Message;
+    
+                        document.getElementById("editReviewFormContainer").style.display = "block";
+                    });
+            }
+    
+            document.getElementById("editReviewForm").addEventListener("submit", function(event) {
+                event.preventDefault();
+    
+                const reviewData = {
+                    id: parseInt(document.getElementById("reviewEditId").value),
+                    production: parseInt(document.getElementById("reviewEditProduction").value),
+                    owner: document.getElementById("reviewEditOwner").value,
+                    topic: document.getElementById("reviewEditTopic").value,
+                    message: document.getElementById("reviewEditMessage").value
+                };
+    
+                fetch("http://127.0.0.1:5050/admin/update-review", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(reviewData)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById("editReviewForm").reset();
+                        document.getElementById("editReviewFormContainer").style.display = "none";
+                        loadReviews();
+                    }
+                })
+                .catch(error => {
+                    console.error("Ошибка:", error);
+                });
+            });
+    
+            function loadReviews() {
+                fetch("http://127.0.0.1:5050/admin/get-reviews")
+                    .then(response => response.json())
+                    .then(data => {
+                        const reviewsList = document.getElementById("reviewsList");
+                        reviewsList.innerHTML = '';
+    
+                        if (data && data.reviews) {
+                            data.reviews.forEach(r => {
+                                const reviewItem = document.createElement("div");
+                                reviewItem.innerHTML = `
+                                    <h4>${r.Topic} (Произведение: ${r.Production})</h4>
+                                    <p>${r.Message}</p>
+                                    <p><strong>Автор:</strong> ${r.Owner}</p>
+                                    <button onclick="deleteReview('${r.ID}')">Удалить</button>
+                                    <button onclick="editReview('${r.ID}')">Изменить</button>
+                                    <hr>
+                                `;
+                                reviewsList.appendChild(reviewItem);
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Ошибка:", error);
+                    });
+            }
+    
+            function deleteReview(id) {
+                fetch(`http://127.0.0.1:5050/admin/delete-review/${id}`, { method: "DELETE" })
+                    .then(response => {
+                        if (response.ok) {
+                            loadReviews();
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Ошибка:", error);
+                    });
+            }
+    
+            loadReviews();
+        </script>
+    </div>
+
+    <div id="discussionsSection" class="section">
+        <h3>Управление обсуждениями</h3>
+        <button id="showAddDiscussionFormBtn">Добавить обсуждение</button>
+    
+        <div id="addDiscussionFormContainer" style="display:none;">
+            <h3>Добавить обсуждение</h3>
+            <form id="addDiscussionForm">
+                <label for="discussionId">ID:</label>
+                <input type="number" id="discussionAddId" name="id" required><br>
+    
+                <label for="discussionProduction">Произведение:</label>
+                <input type="number" id="discussionAddProduction" name="production" required><br>
+    
+                <label for="discussionOwner">Владелец:</label>
+                <input type="text" id="discussionAddOwner" name="owner" required><br>
+    
+                <label for="discussionTopic">Тема:</label>
+                <input type="text" id="discussionAddTopic" name="topic" required><br>
+    
+                <label for="discussionEntryMessage">Вводное сообщение:</label>
+                <textarea id="discussionAddEntryMessage" name="entryMessage" required></textarea><br>
+    
+                <label for="discussionMessage">Сообщение:</label>
+                <textarea id="discussionAddMessage" name="message" required></textarea><br>
+    
+                <button type="submit">Добавить обсуждение</button>
+            </form>
+        </div>
+    
+        <div id="editDiscussionFormContainer" style="display:none;">
+            <h3>Редактировать обсуждение</h3>
+            <form id="editDiscussionForm">
+                <label for="discussionId">ID:</label>
+                <input type="number" id="discussionEditId" name="id" disabled><br>
+    
+                <label for="discussionProduction">Произведение:</label>
+                <input type="number" id="discussionEditProduction" name="production" required><br>
+    
+                <label for="discussionOwner">Владелец:</label>
+                <input type="text" id="discussionEditOwner" name="owner" required><br>
+    
+                <label for="discussionTopic">Тема:</label>
+                <input type="text" id="discussionEditTopic" name="topic" required><br>
+    
+                <label for="discussionEntryMessage">Вводное сообщение:</label>
+                <textarea id="discussionEditEntryMessage" name="entryMessage" required></textarea><br>
+    
+                <label for="discussionMessage">Сообщение:</label>
+                <textarea id="discussionEditMessage" name="message" required></textarea><br>
+    
+                <button type="submit">Обновить обсуждение</button>
+            </form>
+        </div>
+    
+        <h3>Список обсуждений:</h3>
+        <div id="discussionsList"></div>
+    
+        <script>
+            document.getElementById("showAddDiscussionFormBtn").addEventListener("click", function() {
+                const addFormContainer = document.getElementById("addDiscussionFormContainer");
+                addFormContainer.style.display = addFormContainer.style.display === "none" ? "block" : "none";
+            });
+    
+            document.getElementById("addDiscussionForm").addEventListener("submit", function(event) {
+                event.preventDefault();
+    
+                const discussionData = {
+                    id: parseInt(document.getElementById("discussionAddId").value),
+                    production: parseInt(document.getElementById("discussionAddProduction").value),
+                    owner: document.getElementById("discussionAddOwner").value,
+                    topic: document.getElementById("discussionAddTopic").value,
+                    entryMessage: document.getElementById("discussionAddEntryMessage").value,
+                    message: document.getElementById("discussionAddMessage").value
+                };
+    
+                fetch("http://127.0.0.1:5050/admin/add-discussion", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(discussionData)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById("addDiscussionForm").reset();
+                        document.getElementById("addDiscussionFormContainer").style.display = "none";
+                        loadDiscussions();
+                    }
+                })
+                .catch(error => {
+                    console.error("Ошибка:", error);
+                });
+            });
+    
+            function editDiscussion(id) {
+                fetch(`http://127.0.0.1:5050/admin/get-discussion/${id}`)
+                    .then(response => response.json())
+                    .then(discussion => {
+                        document.getElementById("discussionEditId").value = discussion.ID;
+                        document.getElementById("discussionEditProduction").value = discussion.Production;
+                        document.getElementById("discussionEditOwner").value = discussion.Owner;
+                        document.getElementById("discussionEditTopic").value = discussion.Topic;
+                        document.getElementById("discussionEditEntryMessage").value = discussion.EntryMessage;
+                        document.getElementById("discussionEditMessage").value = discussion.Message;
+    
+                        document.getElementById("editDiscussionFormContainer").style.display = "block";
+                    });
+            }
+    
+            document.getElementById("editDiscussionForm").addEventListener("submit", function(event) {
+                event.preventDefault();
+    
+                const discussionData = {
+                    id: parseInt(document.getElementById("discussionEditId").value),
+                    production: parseInt(document.getElementById("discussionEditProduction").value),
+                    owner: document.getElementById("discussionEditOwner").value,
+                    topic: document.getElementById("discussionEditTopic").value,
+                    entryMessage: document.getElementById("discussionEditEntryMessage").value,
+                    message: document.getElementById("discussionEditMessage").value
+                };
+    
+                fetch("http://127.0.0.1:5050/admin/update-discussion", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(discussionData)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById("editDiscussionForm").reset();
+                        document.getElementById("editDiscussionFormContainer").style.display = "none";
+                        loadDiscussions();
+                    }
+                })
+                .catch(error => {
+                    console.error("Ошибка:", error);
+                });
+            });
+    
+            function loadDiscussions() {
+                fetch("http://127.0.0.1:5050/admin/get-discussions")
+                    .then(response => response.json())
+                    .then(data => {
+                        const discussionsList = document.getElementById("discussionsList");
+                        discussionsList.innerHTML = '';
+    
+                        if (data && data.discussions) {
+                            data.discussions.forEach(d => {
+                                const discussionItem = document.createElement("div");
+                                discussionItem.innerHTML = `
+                                    <h4>${d.Topic} (Произведение: ${d.Production})</h4>
+                                    <p><strong>Вводное сообщение:</strong> ${d.EntryMessage}</p>
+                                    <p>${d.Message}</p>
+                                    <p><strong>Автор:</strong> ${d.Owner}</p>
+                                    <button onclick="deleteDiscussion('${d.ID}')">Удалить</button>
+                                    <button onclick="editDiscussion('${d.ID}')">Изменить</button>
+                                    <hr>
+                                `;
+                                discussionsList.appendChild(discussionItem);
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Ошибка:", error);
+                    });
+            }
+    
+            function deleteDiscussion(id) {
+                fetch(`http://127.0.0.1:5050/admin/delete-discussion/${id}`, { method: "DELETE" })
+                    .then(response => {
+                        if (response.ok) {
+                            loadDiscussions();
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Ошибка:", error);
+                    });
+            }
+    
+            loadDiscussions();
+        </script>
+    </div>
+    
+</body>
+</html>

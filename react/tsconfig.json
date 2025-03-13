@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "outDir": "dist",
+        "module": "ES2020",
+        "target": "ES5",
+        "jsx": "react",
+        "strictFunctionTypes": true,
+        "experimentalDecorators": true,
+        "sourceMap": true,
+        "moduleResolution": "node"
+    },
+    "exclude": [
+        "node_modules",
+        "**/node_modules/*"
+    ]
+}

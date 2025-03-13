@@ -1,0 +1,409 @@
+{
+  "productions": [
+    {
+      "id": "1",
+      "title": "Гравити Фолз",
+      "description": "Анимационный сериал о двух близнецах, которые проводят лето у своего дядюшки в таинственном городе Гравити Фолз.",
+      "genre": "Комедия, Приключения, Фэнтези",
+      "year": 2012,
+      "ratings": {
+        "Гоша": 7,
+        "rizzler": 10,
+        "admin": 1
+      }
+    },
+    {
+      "id": "2",
+      "title": "Наруто",
+      "description": "Аниме о молодом ниндзя по имени Наруто, который стремится стать сильнейшим шиноби и получить признание своей деревни.",
+      "genre": "Экшен, Приключения, Фэнтези",
+      "year": 2002,
+      "ratings": {
+        "Гоша": 5,
+        "rizzler": 9,
+        "admin": 3,
+        "прайм": 10,
+        "чемпион": 10
+      }
+    },
+    {
+      "id": "3",
+      "title": "Время приключений",
+      "description": "Сериал о приключениях юного человека по имени Финн и его лучшего друга, магического пса Джейка, в постапокалиптическом мире.",
+      "genre": "Приключения, Фэнтези, Комедия",
+      "year": 2010,
+      "ratings": {
+        "Гоша": 8,
+        "rizzler": 9,
+        "admin": 2
+      }
+    },
+    {
+      "id": "4",
+      "title": "Рик и Морти",
+      "description": "Научно-фантастический сериал о гениальном, но безумном ученом Рике и его внуке Морти, которые путешествуют по различным мирам.",
+      "genre": "Научная фантастика, Комедия",
+      "year": 2013,
+      "ratings": {
+        "Гоша": 3,
+        "rizzler": 10,
+        "admin": 2
+      }
+    },
+    {
+      "id": "5",
+      "title": "Синяя Тюрьма",
+      "description": "Аниме о соревновании между футболистами в закрытой тюрьме, где лучшие игроки сражаются за шанс стать лучшими в Японии.",
+      "genre": "Спорт, Драма, Экшен",
+      "year": 2021,
+      "ratings": {
+        "Гоша": 10,
+        "rizzler": 1,
+        "admin": 10
+      }
+    },
+    {
+      "id": "6",
+      "title": "Ранго",
+      "description": "Ранго — это забавный ящер, который случайно оказывается в пустынном городке, населенном необычными животными. Он принимает на себя роль шерифа и, пытаясь найти свое место в этом странном мире, сталкивается с множеством приключений и опасностей. Вместе с новыми друзьями он учится смелости и тому, что значит быть героем, даже если ты всего лишь ящерица.",
+      "genre": "Комедия, Приключения, Анимация",
+      "year": 2011,
+      "ratings": {
+        "Гоша": 8,
+        "admin": 10,
+        "rizzler": 2,
+        "чемпион": 10
+      }
+    }
+  ],
+  "users": [
+    {
+      "id": "9275",
+      "name": "admin",
+      "email": "admin@admin.com",
+      "password": "123",
+      "pfp": "https://i.pinimg.com/736x/e6/68/9f/e6689ff96758dad5d20a8adb37959958.jpg",
+      "description": "Самый крутой.",
+      "ratings": {
+        "1": 1,
+        "2": 1,
+        "3": 6,
+        "4": 2,
+        "5": 10,
+        "6": 10
+      },
+      "reviews": [
+        "1",
+        "2",
+        "3"
+      ],
+      "production_status": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 2,
+        "5": 1,
+        "6": 2
+      },
+      "discussions": [
+        "1",
+        "2",
+        "3"
+      ],
+      "collections": [
+        "1",
+        "2"
+      ]
+    },
+    {
+      "id": "0799",
+      "name": "valuev",
+      "email": "valuev@valuev.com",
+      "password": "123",
+      "pfp": "https://avatars.mds.yandex.net/i?id=dbe2566578c19b8d570dbddef19c3bc5_l-10895071-images-thumbs&n=13",
+      "description": "тыквенные семечки",
+      "ratings": {},
+      "production_status": {},
+      "discussions": [
+        "4"
+      ],
+      "collections": [
+        "3"
+      ],
+      "reviews": []
+    },
+    {
+      "id": "e80f",
+      "name": "чемпион",
+      "email": "v@v.com",
+      "password": "123",
+      "pfp": "https://avatars.mds.yandex.net/get-kinopoisk-image/10893610/e6c6df0b-db9f-4bd7-ba02-815fe03af56e/1920x",
+      "description": "))",
+      "ratings": {
+        "2": 10,
+        "6": 10
+      },
+      "production_status": {
+        "2": 2,
+        "6": 1
+      },
+      "discussions": [],
+      "reviews": [
+        "4"
+      ],
+      "collections": []
+    }
+  ],
+  "discussions": [
+    {
+      "id": "1",
+      "production": "0",
+      "owner": "admin",
+      "topic": "Главное обсуждение",
+      "entry_message": "без правил",
+      "message": "Пишите что хотите",
+      "comments": [
+        {
+          "text": "test1",
+          "user": "admin",
+          "ratings": {
+            "admin": -1
+          }
+        },
+        {
+          "text": "test2",
+          "user": "admin",
+          "ratings": {
+            "rizzler": -1,
+            "admin": -1
+          }
+        },
+        {
+          "text": "123",
+          "user": "admin",
+          "ratings": {
+            "admin": 1
+          }
+        },
+        {
+          "text": "это мое последнее сообщение",
+          "user": "admin",
+          "ratings": {
+            "admin": 1
+          }
+        },
+        {
+          "text": "тыквенные семечки",
+          "user": "valuev",
+          "ratings": {}
+        },
+        {
+          "text": "теперь я",
+          "user": "чемпион",
+          "ratings": {}
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "production": "5",
+      "owner": "admin",
+      "topic": "Второй сезон - отстой",
+      "entry_message": "Сейчас я обьясню почему второй сезон получился плохим",
+      "message": "test message1",
+      "comments": [
+        {
+          "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "user": "admin",
+          "ratings": {
+            "admin": 1
+          }
+        },
+        {
+          "text": "test2",
+          "user": "admin",
+          "ratings": {
+            "rizzler": -1,
+            "admin": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "production": "0",
+      "owner": "admin",
+      "topic": "test topic1",
+      "entry_message": "test entry message1",
+      "message": "test message1",
+      "comments": [
+        {
+          "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "user": "admin",
+          "ratings": {
+            "admin": 1
+          }
+        },
+        {
+          "text": "test2",
+          "user": "admin",
+          "ratings": {
+            "rizzler": -1,
+            "admin": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "owner": "valuev",
+      "production": "1",
+      "topic": "Тыквенные семечки",
+      "entry_message": "Тыквенные семечки",
+      "message": "Тыквенные семечки",
+      "comments": [
+        {
+          "text": "Тыквенные семечки",
+          "user": "valuev",
+          "ratings": {
+            "admin": 1,
+            "valuev": 1
+          }
+        },
+        {
+          "text": "Тыквенные семечки",
+          "user": "admin",
+          "ratings": {
+            "valuev": 1
+          }
+        }
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "id": "1",
+      "production": "0",
+      "owner": "admin",
+      "topic": "Правила обзоров",
+      "message": "Тут будут правила обзоров:\n1) Админ всегда прав\n2) Если админ не прав - читать первый пункт",
+      "comments": [
+        {
+          "text": "пример",
+          "user": "admin",
+          "ratings": {
+            "admin": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "owner": "admin",
+      "production": "3",
+      "topic": "Очень хорошо",
+      "message": "Мне понравилось\n",
+      "comments": [
+        {
+          "text": "класс да\n",
+          "user": "admin",
+          "ratings": {
+            "admin": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "owner": "admin",
+      "production": "6",
+      "topic": "Лучший анимационный фильм",
+      "message": "Очень хороший мультик",
+      "comments": []
+    },
+    {
+      "id": "4",
+      "owner": "чемпион",
+      "production": "6",
+      "topic": "Очень класс",
+      "message": "нраица",
+      "comments": [
+        {
+          "text": "это я",
+          "user": "чемпион",
+          "ratings": {}
+        }
+      ]
+    }
+  ],
+  "collections": [
+    {
+      "id": "1",
+      "owner": "admin",
+      "topic": "Первая подборка",
+      "message": "Тут случайные произведения",
+      "comments": [
+        {
+          "text": "пример",
+          "user": "admin",
+          "ratings": {
+            "admin": 1,
+            "чемпион": 1
+          }
+        },
+        {
+          "text": "тыквенные семечки",
+          "user": "valuev",
+          "ratings": {
+            "чемпион": -1
+          }
+        },
+        {
+          "text": "круть",
+          "user": "чемпион",
+          "ratings": {}
+        }
+      ],
+      "items": [
+        {
+          "comment": "первое произведение. проверка проверка проверка проверка проверка проверка проверка проверка проверка проверка проверка проверка",
+          "production": "1"
+        },
+        {
+          "comment": "второе произведение",
+          "production": "2"
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "owner": "admin",
+      "items": [
+        {
+          "production": "1",
+          "comment": ""
+        },
+        {
+          "production": "3",
+          "comment": ""
+        }
+      ],
+      "topic": "123",
+      "message": "123",
+      "comments": []
+    },
+    {
+      "id": "3",
+      "owner": "valuev",
+      "items": [
+        {
+          "production": "4",
+          "comment": ""
+        }
+      ],
+      "topic": "123",
+      "message": "213",
+      "comments": []
+    }
+  ]
+}
